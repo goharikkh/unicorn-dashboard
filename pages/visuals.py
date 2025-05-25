@@ -95,133 +95,141 @@ fig_bubble = px.scatter(
 )
 
 # Layout
-layout = html.Div([
-    html.H2("Unicorn Visualizations"),
+layout = html.Div(
+    style={"display": "flex", "justifyContent": "center", "padding": "40px"},
+    children=[
+        html.Div(
+            style={"maxWidth": "1200px", "width": "100%"},
+            children=[
+                html.H2("Unicorn Visualizations", style={"textAlign": "center", "marginBottom": "30px"}),
 
-    dcc.Tabs([
-        # ------------------------ SIMPLE VISUALS ------------------------
-        dcc.Tab(label="📊 Simple Visuals", children=[
-            dcc.Graph(
-                figure=px.histogram(
-                    df, x="Valuation ($B)", nbins=30,
-                    title="Distribution of Unicorn Valuations"
-                )
-            ),
+                dcc.Tabs([
+                    # ------------------------ SIMPLE VISUALS ------------------------
+                    dcc.Tab(label="📊 Simple Visuals", children=[
+                        dcc.Graph(
+                            figure=px.histogram(
+                                df, x="Valuation ($B)", nbins=30,
+                                title="Distribution of Unicorn Valuations"
+                            )
+                        ),
 
-            dcc.Graph(
-                figure=px.bar(
-                    top_countries, x='Country', y='Count',
-                    title='Top 10 Countries with Most Unicorns'
-                )
-            ),
+                        dcc.Graph(
+                            figure=px.bar(
+                                top_countries, x='Country', y='Count',
+                                title='Top 10 Countries with Most Unicorns'
+                            )
+                        ),
 
-            dcc.Graph(
-                figure=px.bar(
-                    top_cities, x='City', y='Count',
-                    title='Top 10 Cities with Most Unicorns'
-                )
-            ),
+                        dcc.Graph(
+                            figure=px.bar(
+                                top_cities, x='City', y='Count',
+                                title='Top 10 Cities with Most Unicorns'
+                            )
+                        ),
 
-            dcc.Graph(
-                figure=px.bar(
-                    top_industries, x='Industry', y='Count',
-                    title='Top 10 Unicorn Industries'
-                )
-            ),
+                        dcc.Graph(
+                            figure=px.bar(
+                                top_industries, x='Industry', y='Count',
+                                title='Top 10 Unicorn Industries'
+                            )
+                        ),
 
-            dcc.Graph(figure=heatmap_fig),
+                        dcc.Graph(figure=heatmap_fig),
 
-            html.P("""
-                🔎 This heatmap shows the correlation between valuation and categorical features.
-                As observed, there is little to no correlation between Valuation and Country, City, or Industry.
-                This implies that high-valuation startups can emerge across various locations and industries,
-                without strong geographic or sector bias.
-            """)
-        ]),
+                        html.P("""
+                            🔎 This heatmap shows the correlation between valuation and categorical features.
+                            As observed, there is little to no correlation between Valuation and Country, City, or Industry.
+                            This implies that high-valuation startups can emerge across various locations and industries,
+                            without strong geographic or sector bias.
+                        """)
+                    ]),
 
-        # ------------------------ ADVANCED VISUALS ------------------------
-        dcc.Tab(label="📈 Advanced Visuals", children=[
+                    # ------------------------ ADVANCED VISUALS ------------------------
+                    dcc.Tab(label="📈 Advanced Visuals", children=[
 
-            dcc.Graph(
-                figure=px.bar(
-                    df.sort_values("Valuation ($B)", ascending=False).head(10),
-                    x="Valuation ($B)", y="Company", orientation="h",
-                    color="Valuation ($B)", text="Valuation ($B)",
-                    hover_data=["Country", "Industry", "City"],
-                    title="Top 10 Most Valuable Unicorn Companies",
-                    color_continuous_scale="Viridis"
-                ).update_layout(
-                    title_font=dict(size=24),
-                    xaxis_title="Valuation in Billions ($)",
-                    yaxis_title="Company",
-                    yaxis=dict(categoryorder='total ascending')
-                ).update_traces(textposition="outside")
-            ),
+                        dcc.Graph(
+                            figure=px.bar(
+                                df.sort_values("Valuation ($B)", ascending=False).head(10),
+                                x="Valuation ($B)", y="Company", orientation="h",
+                                color="Valuation ($B)", text="Valuation ($B)",
+                                hover_data=["Country", "Industry", "City"],
+                                title="Top 10 Most Valuable Unicorn Companies",
+                                color_continuous_scale="Viridis"
+                            ).update_layout(
+                                title_font=dict(size=24),
+                                xaxis_title="Valuation in Billions ($)",
+                                yaxis_title="Company",
+                                yaxis=dict(categoryorder='total ascending')
+                            ).update_traces(textposition="outside")
+                        ),
 
-            dcc.Graph(
-                figure=px.scatter_geo(
-                    df.groupby("Country")["Valuation ($B)"].sum().reset_index().sort_values("Valuation ($B)", ascending=False),
-                    locations="Country", locationmode="country names",
-                    size="Valuation ($B)", hover_name="Country",
-                    title="Total Unicorn Valuation by Country",
-                    projection="natural earth",
-                    size_max=40, color="Valuation ($B)", color_continuous_scale="Viridis"
-                ).update_layout(
-                    title_font=dict(size=24),
-                    geo=dict(showframe=False, showcoastlines=True)
-                )
-            ),
+                        dcc.Graph(
+                            figure=px.scatter_geo(
+                                df.groupby("Country")["Valuation ($B)"].sum().reset_index().sort_values("Valuation ($B)", ascending=False),
+                                locations="Country", locationmode="country names",
+                                size="Valuation ($B)", hover_name="Country",
+                                title="Total Unicorn Valuation by Country",
+                                projection="natural earth",
+                                size_max=40, color="Valuation ($B)", color_continuous_scale="Viridis"
+                            ).update_layout(
+                                title_font=dict(size=24),
+                                geo=dict(showframe=False, showcoastlines=True)
+                            )
+                        ),
 
-            dcc.Graph(
-                figure=px.treemap(
-                    df.groupby("Industry")["Valuation ($B)"].sum().reset_index().sort_values("Valuation ($B)", ascending=False),
-                    path=["Industry"], values="Valuation ($B)",
-                    title="Unicorn Valuation Distribution by Industry",
-                    color="Valuation ($B)", color_continuous_scale="Viridis"
-                ).update_layout(title_font=dict(size=24))
-            ),
+                        dcc.Graph(
+                            figure=px.treemap(
+                                df.groupby("Industry")["Valuation ($B)"].sum().reset_index().sort_values("Valuation ($B)", ascending=False),
+                                path=["Industry"], values="Valuation ($B)",
+                                title="Unicorn Valuation Distribution by Industry",
+                                color="Valuation ($B)", color_continuous_scale="Viridis"
+                            ).update_layout(title_font=dict(size=24))
+                        ),
 
-            dcc.Graph(
-                figure=px.line(
-                    df.sort_values("Date Joined").assign(Global_Count=lambda d: range(1, len(d)+1)),
-                    x="Date Joined", y="Global_Count",
-                    title="Cumulative Growth of Unicorn Companies Over Time",
-                    labels={"Date Joined": "Date", "Global_Count": "Cumulative Unicorns"}
-                ).update_traces(line=dict(color="royalblue", width=3)).update_layout(
-                    title_font=dict(size=24),
-                    xaxis_title="Date", yaxis_title="Number of Unicorns"
-                )
-            ),
+                        dcc.Graph(
+                            figure=px.line(
+                                df.sort_values("Date Joined").assign(Global_Count=lambda d: range(1, len(d)+1)),
+                                x="Date Joined", y="Global_Count",
+                                title="Cumulative Growth of Unicorn Companies Over Time",
+                                labels={"Date Joined": "Date", "Global_Count": "Cumulative Unicorns"}
+                            ).update_traces(line=dict(color="royalblue", width=3)).update_layout(
+                                title_font=dict(size=24),
+                                xaxis_title="Date", yaxis_title="Number of Unicorns"
+                            )
+                        ),
 
-            dcc.Graph(
-                figure=px.scatter(
-                    df.copy(),
-                    x="Valuation ($B)", y="Industry",
-                    animation_frame=df["Date Joined"].dt.year.astype(str),
-                    size="Valuation ($B)", color="Industry",
-                    hover_name="Company", title="Unicorns Over Time: Valuation Growth by Industry",
-                    log_x=True, size_max=45, height=700
-                ).update_layout(title_font=dict(size=24))
-            ),
+                        dcc.Graph(
+                            figure=px.scatter(
+                                df.copy(),
+                                x="Valuation ($B)", y="Industry",
+                                animation_frame=df["Date Joined"].dt.year.astype(str),
+                                size="Valuation ($B)", color="Industry",
+                                hover_name="Company", title="Unicorns Over Time: Valuation Growth by Industry",
+                                log_x=True, size_max=45, height=700
+                            ).update_layout(title_font=dict(size=24))
+                        ),
 
-            dcc.Graph(
-                figure=px.bar(
-                    investor_data,
-                    x="Unicorn Count", y="Investor", orientation="h",
-                    title="Top 20 Most Active Unicorn Investors",
-                    text="Unicorn Count", color="Unicorn Count",
-                    color_continuous_scale="Viridis"
-                ).update_layout(
-                    title_font=dict(size=24),
-                    xaxis_title="Number of Unicorns Backed",
-                    yaxis_title="Investor"
-                ).update_traces(textposition="outside")
-            ),
+                        dcc.Graph(
+                            figure=px.bar(
+                                investor_data,
+                                x="Unicorn Count", y="Investor", orientation="h",
+                                title="Top 20 Most Active Unicorn Investors",
+                                text="Unicorn Count", color="Unicorn Count",
+                                color_continuous_scale="Viridis"
+                            ).update_layout(
+                                title_font=dict(size=24),
+                                xaxis_title="Number of Unicorns Backed",
+                                yaxis_title="Investor"
+                            ).update_traces(textposition="outside")
+                        ),
 
-            dcc.Graph(figure=fig_industry_trend),
-            dcc.Graph(figure=fig_valuation_industry),
-            dcc.Graph(figure=fig_sunburst),
-            dcc.Graph(figure=fig_bubble)
-        ])
-    ])
-])
+                        dcc.Graph(figure=fig_industry_trend),
+                        dcc.Graph(figure=fig_valuation_industry),
+                        dcc.Graph(figure=fig_sunburst),
+                        dcc.Graph(figure=fig_bubble)
+                    ])
+                ])
+            ]
+        )
+    ]
+)

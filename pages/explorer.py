@@ -18,54 +18,63 @@ df["Year"] = df["Date Joined"].dt.year
 available_countries = sorted(df["Country"].dropna().unique())
 app = dash.get_app()
 
-layout = html.Div([
-    html.H2("Explore Unicorn Companies"),
+layout = html.Div(
+    style={"display": "flex", "justifyContent": "center", "padding": "40px"},
+    children=[
+        html.Div(
+            style={"maxWidth": "1200px", "width": "100%"},
+            children=[
+                html.H2("Explore Unicorn Companies", style={"textAlign": "center", "marginBottom": "30px"}),
 
-    html.Div([
-        html.Label("Select Country:"),
-        dcc.Dropdown(
-            id="country-selector",
-            options=[{"label": c, "value": c} for c in available_countries],
-            placeholder="Select a country (optional)..."
-        ),
-    ]),
+                html.Div([
+                    html.Label("Select Country:"),
+                    dcc.Dropdown(
+                        id="country-selector",
+                        options=[{"label": c, "value": c} for c in available_countries],
+                        placeholder="Select a country (optional)..."
+                    ),
+                ]),
 
-    html.Br(),
+                html.Br(),
 
-    html.Div([
-        html.Label("Select City:"),
-        dcc.Dropdown(
-            id="city-selector",
-            placeholder="Select a city (optional)..."
+                html.Div([
+                    html.Label("Select City:"),
+                    dcc.Dropdown(
+                        id="city-selector",
+                        placeholder="Select a city (optional)..."
+                    )
+                ]),
+
+                html.Br(),
+
+                html.Div([
+                    html.Label("Select Year Range:"),
+                    dcc.RangeSlider(
+                        id="year-slider",
+                        min=df["Year"].min(),
+                        max=df["Year"].max(),
+                        value=[df["Year"].min(), df["Year"].max()],
+                        marks={int(year): str(year) for year in sorted(df["Year"].dropna().unique())},
+                        tooltip={"placement": "bottom", "always_visible": False}
+                    )
+                ]),
+
+                html.Br(),
+
+                dash_table.DataTable(
+                    id="unicorn-table",
+                    columns=[{"name": col, "id": col} for col in [
+                        "Company", "Valuation ($B)", "Industry", "City", "Country", "Date Joined", "Select Investors"]],
+                    data=df.to_dict("records"),
+                    style_table={"overflowX": "auto"},
+                    style_cell={"textAlign": "left"},
+                    page_size=15
+                )
+            ]
         )
-    ]),
+    ]
+)
 
-    html.Br(),
-
-    html.Div([
-        html.Label("Select Year Range:"),
-        dcc.RangeSlider(
-            id="year-slider",
-            min=df["Year"].min(),
-            max=df["Year"].max(),
-            value=[df["Year"].min(), df["Year"].max()],
-            marks={int(year): str(year) for year in sorted(df["Year"].dropna().unique())},
-            tooltip={"placement": "bottom", "always_visible": False}
-        )
-    ]),
-
-    html.Br(),
-
-    dash_table.DataTable(
-        id="unicorn-table",
-        columns=[{"name": col, "id": col} for col in [
-            "Company", "Valuation ($B)", "Industry", "City", "Country", "Date Joined", "Select Investors"]],
-        data=df.to_dict("records"),
-        style_table={"overflowX": "auto"},
-        style_cell={"textAlign": "left"},
-        page_size=15
-    )
-])
 
 # --- Callbacks ---
 
